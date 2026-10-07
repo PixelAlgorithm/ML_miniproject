@@ -1,0 +1,12 @@
+{
+  "target": "delta_theta",
+  "benchmark": "delta_theta = -0.0085 + 0.8494 * distance_km",
+  "alpha_all_features": 5878.0160722749115,
+  "alpha_selected": 2285.4638641349884,
+  "selected_attributes": [
+    "avg_pga_g",
+    "site_distance_km"
+  ],
+  "n_model_columns": 2,
+  "seed": 42
+}
