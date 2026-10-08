@@ -1,0 +1,16 @@
+,cv_r2_drop
+avg_pga_g,0.6096
+site_distance_km,0.3099
+dip,0.0267
+nehrp_1,0.0113
+avg_vs30,0.0013
+vs30_1,0.0
+vs30_2,-0.0005
+nehrp_2,-0.0009
+mechanism,-0.0223
+depth_km,-0.0309
+clstd_1,-0.0717
+rake,-0.0803
+clstd_2,-0.0803
+magnitude,-0.094
+strike,-0.1282

@@ -1,0 +1,13 @@
+model,split,R2,MAE,RMSE
+Mean predictor,train,0.0,2.46409,5.80918
+Mean predictor,val,-0.02572,1.72831,2.93498
+Mean predictor,test,-0.01175,2.35253,4.80923
+Distance-only benchmark,train,0.0452,2.32266,5.67636
+Distance-only benchmark,val,0.17554,1.20783,2.63133
+Distance-only benchmark,test,0.08344,1.64076,4.57739
+Ridge (all features),train,0.11662,2.13624,5.45996
+Ridge (selected features),train,0.23303,1.87619,5.08748
+Ridge (all features),val,0.06944,1.69221,2.79552
+Ridge (selected features),val,-0.02662,1.98845,2.93626
+Ridge (all features),test,0.10918,2.09313,4.51265
+Ridge (selected features),test,0.11244,2.49798,4.5044

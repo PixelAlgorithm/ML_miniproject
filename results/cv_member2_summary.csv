@@ -1,0 +1,5 @@
+,R2,R2,MAE,MAE
+,mean,std,mean,std
+model,,,,
+Distance-only benchmark,0.0084,0.1302,2.0792,0.4665
+Ridge (selected features),0.1778,0.0709,1.8865,0.6685
