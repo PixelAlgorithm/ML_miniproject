@@ -1,4 +1,4 @@
 ,R2,R2,MAE,MAE,RMSE,RMSE
 ,mean,std,mean,std,mean,std
 model,,,,,,
-Neural network,0.1587,0.1922,1.5851,0.5987,4.1445,2.4641
+Neural network,0.2906,0.2149,1.4241,0.5324,4.0532,2.4426
