@@ -1,7 +1,7 @@
 {
   "target": "delta_theta",
-  "benchmark": "delta_theta = -0.0085 + 0.8494 * distance_km",
-  "alpha_all_features": 5878.0160722749115,
+  "benchmark": "delta_theta = -0.0707 + 0.8677 * distance_km",
+  "alpha_all_features": 24244.62017082326,
   "alpha_selected": 2285.4638641349884,
   "selected_attributes": [
     "avg_pga_g",

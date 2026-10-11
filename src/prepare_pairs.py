@@ -1,34 +1,42 @@
-"""Turns Member 1's REAL pair file (with true delta_theta) into the model-ready dataset.
-Input : dataset/station_pairs_delta_theta_5km.csv   (Member 1: pairs <5 km apart with Theta_1/2 and Delta_Theta)
-        dataset/cleaned_dataset_NGA_West2_d050.csv  (extra per-site source/site features, joined on RSN)
-Output: dataset/pairs_dataset.csv  (target = delta_theta, group = EQID, distance = site_distance_km)
-Usage : python src/prepare_pairs.py     then   python src/make_split.py
-NOTE  : PGA/PGV/PGD per site are not added; only Member 1's Avg_PGA_g is kept as a feature (it does not build the target).
+"""Builds the model-ready pair dataset DIRECTLY from Member 1's cleaned CSV (which now contains Theta.D (deg)).
+One row per unordered pair of DIFFERENT stations of the SAME earthquake (EQID) that are closer than MAX_DIST_KM.
+Target: delta_theta = folded |Theta.D_i - Theta.D_j|  (deg, 0..90)  - angles are axial, so theta and theta+180 are the same axis.
+Input : dataset/cleaned_dataset_NGA_West2_d050.csv
+Output: dataset/pairs_dataset.csv     Usage: python src/prepare_pairs.py   then   python src/make_split.py
+PGA is kept only as the pair-average (avg_pga_g); PGV/PGD are not used.
 """
-import pandas as pd
+import itertools, numpy as np, pandas as pd
 
-PAIRS = "dataset/station_pairs_delta_theta_5km.csv"
-CLEAN = "dataset/cleaned_dataset_NGA_West2_d050.csv"
-OUT   = "dataset/pairs_dataset.csv"
+CLEAN, OUT = "dataset/cleaned_dataset_NGA_West2_d050.csv", "dataset/pairs_dataset.csv"
+ANGLE, MAX_DIST_KM = "Theta.D (deg)", 5.0
 
-p = pd.read_csv(PAIRS)
-c = pd.read_csv(CLEAN).set_index("Record Sequence Number")
+def haversine_km(la1, lo1, la2, lo2):
+    p = np.pi / 180
+    a = np.sin((la2-la1)*p/2)**2 + np.cos(la1*p)*np.cos(la2*p)*np.sin((lo2-lo1)*p/2)**2
+    return 2 * 6371.0 * np.arcsin(np.sqrt(a))
 
-src = ["Hypocenter Depth (km)", "Strike (deg)", "Dip (deg)", "Rake Angle (deg)", "Mechanism Based on Rake Angle"]
-site = ["Vs30 (m/s) selected for analysis", "ClstD (km)", "Preferred NEHRP Based on Vs30"]
-
-out = pd.DataFrame({"EQID": p["EQID"].astype(int),
-                    "site_distance_km": p["Inter_Station_Distance_km"],
-                    "magnitude": p["Earthquake_Magnitude"],
-                    "avg_pga_g": p["Avg_PGA_g"], "avg_vs30": p["Avg_Vs30_mps"]})
-for col, name in zip(src, ["depth_km", "strike", "dip", "rake", "mechanism"]):
-    out[name] = p["Station_1_RSN"].map(c[col]).values            # earthquake-level -> same for both sites
-for col, name in zip(site, ["vs30", "clstd", "nehrp"]):
-    out[name + "_1"] = p["Station_1_RSN"].map(c[col]).values
-    out[name + "_2"] = p["Station_2_RSN"].map(c[col]).values
-out["delta_theta"] = p["Delta_Theta_deg"]
-
-assert out.notna().all().all(), "unexpected missing values after merge"
-out.to_csv(OUT, index=False)
-print("pairs:", out.shape, "| earthquakes:", out.EQID.nunique(), "| target: delta_theta (REAL angle difference, deg)")
-print(out.delta_theta.describe().round(3).to_string())
+d = pd.read_csv(CLEAN)
+assert ANGLE in d.columns, f"'{ANGLE}' missing - use the updated cleaned CSV from Member 1"
+rows = []
+for eq, g in d.groupby("EQID"):
+    g = g.drop_duplicates(subset=["Station Name", "Station Latitude", "Station Longitude"]).reset_index(drop=True)
+    for i, j in itertools.combinations(range(len(g)), 2):          # i<j: each pair once, never a self-pair
+        a, b = g.loc[i], g.loc[j]
+        dist = haversine_km(a["Station Latitude"], a["Station Longitude"], b["Station Latitude"], b["Station Longitude"])
+        if dist >= MAX_DIST_KM: continue
+        diff = abs(a[ANGLE] - b[ANGLE]) % 180
+        rows.append(dict(EQID=int(eq), site_distance_km=dist,
+                         magnitude=a["Earthquake Magnitude"], depth_km=a["Hypocenter Depth (km)"],
+                         strike=a["Strike (deg)"], dip=a["Dip (deg)"], rake=a["Rake Angle (deg)"],
+                         mechanism=a["Mechanism Based on Rake Angle"],
+                         avg_pga_g=(a["PGA (g)"] + b["PGA (g)"]) / 2,
+                         avg_vs30=(a["Vs30 (m/s) selected for analysis"] + b["Vs30 (m/s) selected for analysis"]) / 2,
+                         vs30_1=a["Vs30 (m/s) selected for analysis"], vs30_2=b["Vs30 (m/s) selected for analysis"],
+                         clstd_1=a["ClstD (km)"], clstd_2=b["ClstD (km)"],
+                         nehrp_1=a["Preferred NEHRP Based on Vs30"], nehrp_2=b["Preferred NEHRP Based on Vs30"],
+                         delta_theta=min(diff, 180 - diff)))
+p = pd.DataFrame(rows)
+assert p.notna().all().all(), "unexpected missing values"
+p.to_csv(OUT, index=False)
+print("pairs:", p.shape, "| earthquakes:", p.EQID.nunique(), "| target: delta_theta from Theta.D (deg)")
+print(p.delta_theta.describe().round(3).to_string())

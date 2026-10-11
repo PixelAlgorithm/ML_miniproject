@@ -1,15 +1,15 @@
 model,split,R2,MAE,RMSE
-Mean predictor,train,0.0,2.48191,5.86256
-Mean predictor,val,-0.02698,1.73457,2.93677
-Mean predictor,test,-0.01227,2.36159,4.81044
-Distance-only benchmark,train,0.04258,2.33637,5.73638
-Distance-only benchmark,val,0.17515,1.21339,2.63195
-Distance-only benchmark,test,0.08294,1.6611,4.57863
-Ridge (all features),train,0.22149,1.90584,5.17272
-Ridge (selected features),train,0.2271,1.8944,5.15405
-Ridge (all features),val,0.10261,1.76183,2.74524
-Ridge (selected features),val,-0.03374,2.00136,2.94643
-Ridge (all features),test,0.21481,1.86393,4.23668
-Ridge (selected features),test,0.10974,2.51699,4.51124
-Neural network,test,0.4642,1.17636,3.49975
-Neural network,cv5_mean,0.15871,1.58514,4.14453
+Mean predictor,train,0.0,2.46409,5.80918
+Mean predictor,val,-0.02572,1.72831,2.93498
+Mean predictor,test,-0.01175,2.35253,4.80923
+Distance-only benchmark,train,0.0452,2.32266,5.67636
+Distance-only benchmark,val,0.17554,1.20783,2.63133
+Distance-only benchmark,test,0.08344,1.64076,4.57739
+Ridge (all features),train,0.11662,2.13624,5.45996
+Ridge (selected features),train,0.23303,1.87619,5.08748
+Ridge (all features),val,0.06944,1.69221,2.79552
+Ridge (selected features),val,-0.02662,1.98845,2.93626
+Ridge (all features),test,0.10918,2.09313,4.51265
+Ridge (selected features),test,0.11244,2.49798,4.5044
+Neural network,test,0.46843,1.14575,3.48591
+Neural network,cv5_mean,0.29064,1.42414,4.05318
